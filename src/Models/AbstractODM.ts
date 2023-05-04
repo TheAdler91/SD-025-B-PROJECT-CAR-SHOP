@@ -1,4 +1,4 @@
-import { model, Model, Schema, models, isValidObjectId } from 'mongoose';
+import { model, Model, Schema, models, isValidObjectId, UpdateQuery } from 'mongoose';
 import UnprocessableEntityError from '../Error/UnprocessableEntityError';
 
 abstract class AbstractODM<T> {
@@ -22,8 +22,18 @@ abstract class AbstractODM<T> {
 
   public async findById(id: string): Promise<T | null> {
     if (!isValidObjectId(id)) throw new UnprocessableEntityError('Invalid mongo id');
+
     const vehicle = await this.model.findOne({ _id: id });
+
     return vehicle as T;
+  }
+
+  public async update(id: string, obj: T): Promise<T | null> {
+    if (!isValidObjectId(id)) throw new UnprocessableEntityError('Invalid mongo id');
+
+    await this.model.findByIdAndUpdate({ _id: id }, { ...obj as UpdateQuery<T> });
+    
+    return this.findById(id);
   }
 }
 
