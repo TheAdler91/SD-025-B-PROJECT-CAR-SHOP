@@ -1,15 +1,11 @@
-import { NextFunction, Request, Response } from 'express';
+import { ErrorRequestHandler } from 'express';
 
-class ErrorHandler {
-  public static handle(
-    error: Error,
-    _req: Request,
-    res: Response,
-    next: NextFunction,
-  ) {
-    res.status(500).json({ message: error.message });
-    next();
+const ErrorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
+  const { statusCode, message } = err;
+  if (statusCode) {
+    return res.status(statusCode).json({ message });
   }
-}
+  res.status(500).json({ message });
+};
 
 export default ErrorHandler;
