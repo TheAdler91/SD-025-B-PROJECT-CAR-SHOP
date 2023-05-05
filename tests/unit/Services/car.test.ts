@@ -32,4 +32,8 @@ describe('Testing CarService', function () {
   
     expect(result).to.be.deep.equal(carOutput);
   });
+
+  afterEach(function () {
+    sinon.restore();
+  });
 });
