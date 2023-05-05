@@ -3,6 +3,7 @@ import Car from '../Domains/Car';
 import ICar from '../Interfaces/ICar';
 import NotFoundError from '../Error/NotFoundError';
 
+const CAR_NOT_FOUND = 'Car not found';
 class CarService {
   private createCarDomain(car: ICar | null): Car | null {
     if (car) {
@@ -27,16 +28,23 @@ class CarService {
   public async getCarById(id: string): Promise<Car | null> {
     const carODM = new CarODM();
     const car = await carODM.findById(id);
-    if (!car) throw new NotFoundError('Car not found');
+    if (!car) throw new NotFoundError(CAR_NOT_FOUND);
     return this.createCarDomain(car);
   }
 
   public async updateCar(id: string, car: ICar): Promise<Car | null> {
     const carODM = new CarODM();
     const findCar = await carODM.findById(id);
-    if (!findCar) throw new NotFoundError('Car not found');
+    if (!findCar) throw new NotFoundError(CAR_NOT_FOUND);
     const updatedCar = await carODM.update(id, car);
     return this.createCarDomain(updatedCar);
+  }
+
+  public async deleteCar(id: string): Promise<void> {
+    const carODM = new CarODM();
+    const findCar = await carODM.findById(id);
+    if (!findCar) throw new NotFoundError(CAR_NOT_FOUND);
+    await carODM.delete(id);
   }
 }
 
