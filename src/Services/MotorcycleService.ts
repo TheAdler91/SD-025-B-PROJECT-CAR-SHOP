@@ -30,6 +30,14 @@ class MotorcycleService {
     if (!motorcycle) throw new NotFoundError('Motorcycle not found');
     return this.createMotorcycleDomain(motorcycle);
   }
+
+  public async updateMotorcycle(id: string, motorcycle: IMotorcycle): Promise<Motorcycle | null> {
+    const motorcycleODM = new MotorcycleODM();
+    const motorcycleFound = await motorcycleODM.findById(id);
+    if (!motorcycleFound) throw new NotFoundError('Motorcycle not found');
+    const motorcycleUpdated = await motorcycleODM.update(id, motorcycle);
+    return this.createMotorcycleDomain(motorcycleUpdated);
+  }
 }
 
 export default MotorcycleService;
