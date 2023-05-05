@@ -1,6 +1,7 @@
 import MotorcycleODM from '../Models/MotorcycleODM';
 import Motorcycle from '../Domains/Motorcycle';
 import IMotorcycle from '../Interfaces/IMotorcycle';
+import NotFoundError from '../Error/NotFoundError';
 
 class MotorcycleService {
   private createMotorcycleDomain(motorcycle: IMotorcycle | null): Motorcycle | null {
@@ -14,6 +15,20 @@ class MotorcycleService {
     const motorcycleODM = new MotorcycleODM();
     const createdMotorcycle = await motorcycleODM.create(motorcycle);
     return this.createMotorcycleDomain(createdMotorcycle);
+  }
+
+  public async getAllMotorcycles(): Promise<Motorcycle[] | null> {
+    const motorcycleODM = new MotorcycleODM();
+    const motorcycleArr = await motorcycleODM.findAll();
+    const bikes = motorcycleArr.map((bike: IMotorcycle) => this.createMotorcycleDomain(bike));
+    return bikes as Motorcycle[];
+  }
+
+  public async getMotorcycleById(id: string): Promise<Motorcycle | null> {
+    const motorcycleODM = new MotorcycleODM();
+    const motorcycle = await motorcycleODM.findById(id);
+    if (!motorcycle) throw new NotFoundError('Motorcycle not found');
+    return this.createMotorcycleDomain(motorcycle);
   }
 }
 
