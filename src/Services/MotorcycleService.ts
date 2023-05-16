@@ -3,6 +3,7 @@ import Motorcycle from '../Domains/Motorcycle';
 import IMotorcycle from '../Interfaces/IMotorcycle';
 import NotFoundError from '../Error/NotFoundError';
 
+const MOTORCYCLE_NOT_FOUND = 'Motorcycle not found';
 class MotorcycleService {
   private createMotorcycleDomain(motorcycle: IMotorcycle | null): Motorcycle | null {
     if (motorcycle) {
@@ -27,16 +28,23 @@ class MotorcycleService {
   public async getMotorcycleById(id: string): Promise<Motorcycle | null> {
     const motorcycleODM = new MotorcycleODM();
     const motorcycle = await motorcycleODM.findById(id);
-    if (!motorcycle) throw new NotFoundError('Motorcycle not found');
+    if (!motorcycle) throw new NotFoundError(MOTORCYCLE_NOT_FOUND);
     return this.createMotorcycleDomain(motorcycle);
   }
 
   public async updateMotorcycle(id: string, motorcycle: IMotorcycle): Promise<Motorcycle | null> {
     const motorcycleODM = new MotorcycleODM();
     const motorcycleFound = await motorcycleODM.findById(id);
-    if (!motorcycleFound) throw new NotFoundError('Motorcycle not found');
+    if (!motorcycleFound) throw new NotFoundError(MOTORCYCLE_NOT_FOUND);
     const motorcycleUpdated = await motorcycleODM.update(id, motorcycle);
     return this.createMotorcycleDomain(motorcycleUpdated);
+  }
+
+  public async deleteMotorcycle(id: string): Promise<void> {
+    const motorcycleODM = new MotorcycleODM();
+    const motorcycleFound = await motorcycleODM.findById(id);
+    if (!motorcycleFound) throw new NotFoundError(MOTORCYCLE_NOT_FOUND);
+    await motorcycleODM.delete(id);
   }
 }
 
